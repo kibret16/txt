@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body id="hello">
+
+<small>
+Copy html directly into Text box, convert to MD, and copy text.<br><br>
+</small>
+
+<div contenteditable="true"  id="editable"></div>
+<textarea id="md"></textarea>
+<div>
+  <button id="tomd-button" class="btn" onclick="toMD('editable', 'md')">To Markdown</button>
+  <button id="tohtml-button" class="btn" onclick="toHTML('editable', 'md')">To HTML</button>
+  <input id="copy-button" class="btn" type="button" onclick="copyContent('md')" value="Copy Text" />
+  <button class="btn" style="float: right" onclick="reload()">Reset</button>
+</div>
+
+<script src="turndown.js"></script>
+<script>
+
+hide('md');
+hide('copy-button');
+
+function reload() {
+  location.reload();
+}
+
+function toHTML(inId, outId) {
+  var input = document.getElementById(inId);
+  var output = document.getElementById(outId);
+  var html = input.innerHTML;
+  input.innerText = html;
+  output.value = html;
+  hide('tohtml-button');
+  hide('tomd-button');
+  show('copy-button');
+  hide('editable');
+  show('md');
+}
+
+function toMD(inId, outId) {
+  var input = document.getElementById(inId);
+  var output = document.getElementById(outId);
+  var turndownService = new window.TurndownService({
+    "headingStyle": "atx",
+    "hr": "- - -",
+    "bulletListMarker": "-",
+    "codeBlockStyle": "indented",
+    "fence": "```",
+    "emDelimiter": "*",
+    "strongDelimiter": "**",
+    "linkStyle": "inlined",
+    "linkReferenceStyle": "full"
+  });
+  
+  var tables = turndownPluginGfm.tables
+  turndownService.use([tables])
+  markdown = turndownService.turndown(input.innerHTML)
+  input.innerText = markdown;
+  output.value = markdown;
+  hide('tohtml-button');
+  hide('tomd-button');
+  show('copy-button');
+  hide('editable');
+  show('md');
+}
+
+function copyContent(id) {
+  let elem = document.getElementById(id);
+  elem.select();
+  document.execCommand("copy");
+  disable('copy-button');
+  var copyBtn = document.getElementById('copy-button');
+  copyBtn.value = "Copied!"
+}
+
+function show(id) {
+  document.getElementById(id).style.display = '';
+}
+function hide(id) {
+  document.getElementById(id).style.display = 'none';
+}
+function enable(id) {
+  document.getElementById(id).disabled = false;
+} 
+function disable(id) {
+  document.getElementById(id).disabled = true;
+}
+</script>
+
+<style>
+
+* {
+  font-family: system-ui;
+  box-sizing: border-box;
+}
+
+#editable, #md  {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  height: 500px;
+  font-size: 0.8em;
+  overflow: scroll;
+  width: 100%;
+  border: 1px solid #aaa;
+}
+
+.btn {
+  padding: 0.5em 1em;
+}
+
+
+</style>
+
+</body>
+
+</html>

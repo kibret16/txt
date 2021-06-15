@@ -15,7 +15,7 @@ Copy html directly into Text box, convert to MD, and copy text.<br><br>
 <div>
   <button id="tomd-button" class="btn" onclick="toMD('editable', 'md')">To Markdown</button>
   <button id="tohtml-button" class="btn" onclick="toHTML('editable', 'md')">To HTML</button>
-  <input id="copy-button" class="btn" type="button" onclick="copyContent('md')" value="Copy Text" />
+  <button id="copy-button" class="btn" onclick="copyContent('md')">Copy Text</button>
   <button class="btn" style="float: right" onclick="reload()">Reset</button>
 </div>
 
@@ -75,7 +75,7 @@ function copyContent(id) {
   document.execCommand("copy");
   disable('copy-button');
   var copyBtn = document.getElementById('copy-button');
-  copyBtn.value = "Copied!"
+  copyBtn.innerText = "Copied!"
 }
 
 function show(id) {
@@ -97,21 +97,31 @@ function disable(id) {
 * {
   font-family: system-ui;
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  padding: 0.5em;
 }
 
 #editable, #md  {
   background-color: #eee;
-  padding: 0.5em;
-  margin-bottom: 0.5em;
+  padding: 0.75em;
+  margin-bottom: 0.75em;
   height: 500px;
   font-size: 0.8em;
   overflow: scroll;
   width: 100%;
   border: 1px solid #aaa;
+  display: block;
 }
 
 .btn {
-  padding: 0.5em 1em;
+  padding: 0.75em 1em;
+  background: #ccc;
+  border: 1px solid #777;
+  border-radius: 3px;
 }
 
 

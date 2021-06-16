@@ -7,12 +7,10 @@
 
 <body id="hello">
 
-  <small>
+  <!-- <small>
     Copy html directly into Text box, summarize/convert to MD/HTML, and copy.<br><br>
-  </small>
-
-  <div contenteditable="true" id="editable"></div>
-  <textarea id="md"></textarea>
+  </small> -->
+  
   <div>
     <span style="float: left">
       <button id="tomd-button" class="btn" onclick="toMD('editable', 'md')">To Markdown</button>
@@ -20,16 +18,55 @@
       <button id="copy-button" class="btn" onclick="copyContent('md')">Copy Text</button>
     </span>
     <span style="float: right">
-      <button class="btn" onclick="summ('editable')">Summarize?</button>
+      <button class="btn" id="summarize-button" onclick="summ('editable')">Summarize?</button>
       <button class="btn" onclick="reload('')">Reset</button>
     </span>
-    
+  
   </div>
+
+  <div contenteditable="true" id="editable"></div>
+  <textarea id="md"></textarea>
 
   <script src="lodash.js"></script>
   <script src="turndown.js"></script>
   <script src="summarize.js"></script>
   <script>
+
+
+    function summ(id) {
+      var text = document.getElementById(id).innerText;
+      text = text.replaceAll("\n\n", "\n");
+      text = text.replaceAll("\n\n", "\n");
+      text = text.replaceAll("\n\n", "\n");
+      text = text.replaceAll("\n", "||");
+      text = text.replaceAll(". ", ".||");
+      text = text.replaceAll(".\n", ".||\n");
+      text = text.replaceAll("\n", "");
+
+      var sentences = text.split("||");
+      sentences = getLongMembers(sentences, 5);
+
+      disable('summarize-button');
+      var copyBtn = document.getElementById('summarize-button');
+      copyBtn.innerText = "Summ'd!"
+      document.getElementById(id).innerText = sentences.join("\n\n");;
+      sentences = null;
+    }
+
+    function getRandomMembers(arr, n) {
+      // console.log(arr, n);
+      const shuffled = arr.sort(() => 0.5 - Math.random());
+      let result = shuffled.slice(0, n);
+      return result;
+    }
+
+    function getLongMembers(arr, n) {
+      // console.log(arr, n);
+      const ordered = arr.sort((a, b) => b.length - a.length);
+      let result = ordered.slice(0, n);
+      return result;
+    }
+
 
     hide('md');
     hide('copy-button');
@@ -100,14 +137,6 @@
       document.getElementById(id).disabled = true;
     }
 
-    function summ(id) {
-      var text = document.getElementById(id).innerText;
-      var summarizer = new JsSummarize();
-      text = summarizer.summarize("Title", text);
-      document.getElementById(id).innerText = text;
-    }
-
-
   </script>
 
   <style>
@@ -126,8 +155,7 @@
     #md {
       background-color: #eee;
       padding: 0.75em;
-      margin-bottom: 0.75em;
-      height: 250px;
+      height: 450px;
       font-size: 0.8em;
       overflow: scroll;
       width: 100%;
@@ -140,6 +168,7 @@
       background: #ccc;
       border: 1px solid #777;
       border-radius: 3px;
+      margin-bottom: 0.75em;
     }
   </style>
 

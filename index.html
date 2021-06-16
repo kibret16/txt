@@ -1,131 +1,147 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 </head>
 
 <body id="hello">
 
-<small>
-Copy html directly into Text box, convert to MD, and copy text.<br><br>
-</small>
+  <small>
+    Copy html directly into Text box, summarize/convert to MD/HTML, and copy.<br><br>
+  </small>
 
-<div contenteditable="true"  id="editable"></div>
-<textarea id="md"></textarea>
-<div>
-  <button id="tomd-button" class="btn" onclick="toMD('editable', 'md')">To Markdown</button>
-  <button id="tohtml-button" class="btn" onclick="toHTML('editable', 'md')">To HTML</button>
-  <button id="copy-button" class="btn" onclick="copyContent('md')">Copy Text</button>
-  <button class="btn" style="float: right" onclick="reload()">Reset</button>
-</div>
+  <div contenteditable="true" id="editable"></div>
+  <textarea id="md"></textarea>
+  <div>
+    <span style="float: left">
+      <button id="tomd-button" class="btn" onclick="toMD('editable', 'md')">To Markdown</button>
+      <button id="tohtml-button" class="btn" onclick="toHTML('editable', 'md')">To HTML</button>
+      <button id="copy-button" class="btn" onclick="copyContent('md')">Copy Text</button>
+    </span>
+    <span style="float: right">
+      <button class="btn" onclick="summ('editable')">Summarize?</button>
+      <button class="btn" onclick="reload('')">Reset</button>
+    </span>
+    
+  </div>
 
-<script src="turndown.js"></script>
-<script>
+  <script src="lodash.js"></script>
+  <script src="turndown.js"></script>
+  <script src="summarize.js"></script>
+  <script>
 
-hide('md');
-hide('copy-button');
+    hide('md');
+    hide('copy-button');
 
-function reload() {
-  location.reload();
-}
+    function reload() {
+      location.reload();
+    }
 
-function toHTML(inId, outId) {
-  var input = document.getElementById(inId);
-  var output = document.getElementById(outId);
-  var html = input.innerHTML;
-  input.innerText = html;
-  output.value = html;
-  hide('tohtml-button');
-  hide('tomd-button');
-  show('copy-button');
-  hide('editable');
-  show('md');
-}
+    function toHTML(inId, outId) {
+      var input = document.getElementById(inId);
+      var output = document.getElementById(outId);
+      var html = input.innerHTML;
+      input.innerText = html;
+      output.value = html;
+      hide('tohtml-button');
+      hide('tomd-button');
+      show('copy-button');
+      hide('editable');
+      show('md');
+    }
 
-function toMD(inId, outId) {
-  var input = document.getElementById(inId);
-  var output = document.getElementById(outId);
-  var turndownService = new window.TurndownService({
-    "headingStyle": "atx",
-    "hr": "- - -",
-    "bulletListMarker": "-",
-    "codeBlockStyle": "indented",
-    "fence": "```",
-    "emDelimiter": "*",
-    "strongDelimiter": "**",
-    "linkStyle": "inlined",
-    "linkReferenceStyle": "full"
-  });
-  
-  var tables = turndownPluginGfm.tables
-  turndownService.use([tables])
-  markdown = turndownService.turndown(input.innerHTML)
-  input.innerText = markdown;
-  output.value = markdown;
-  hide('tohtml-button');
-  hide('tomd-button');
-  show('copy-button');
-  hide('editable');
-  show('md');
-}
+    function toMD(inId, outId) {
+      var input = document.getElementById(inId);
+      var output = document.getElementById(outId);
+      var turndownService = new window.TurndownService({
+        "headingStyle": "atx",
+        "hr": "- - -",
+        "bulletListMarker": "-",
+        "codeBlockStyle": "indented",
+        "fence": "```",
+        "emDelimiter": "*",
+        "strongDelimiter": "**",
+        "linkStyle": "inlined",
+        "linkReferenceStyle": "full"
+      });
 
-function copyContent(id) {
-  let elem = document.getElementById(id);
-  elem.select();
-  document.execCommand("copy");
-  disable('copy-button');
-  var copyBtn = document.getElementById('copy-button');
-  copyBtn.innerText = "Copied!"
-}
+      var tables = turndownPluginGfm.tables
+      turndownService.use([tables])
+      markdown = turndownService.turndown(input.innerHTML)
+      input.innerText = markdown;
+      output.value = markdown;
+      hide('tohtml-button');
+      hide('tomd-button');
+      show('copy-button');
+      hide('editable');
+      show('md');
+    }
 
-function show(id) {
-  document.getElementById(id).style.display = '';
-}
-function hide(id) {
-  document.getElementById(id).style.display = 'none';
-}
-function enable(id) {
-  document.getElementById(id).disabled = false;
-} 
-function disable(id) {
-  document.getElementById(id).disabled = true;
-}
-</script>
+    function copyContent(id) {
+      let elem = document.getElementById(id);
+      elem.select();
+      document.execCommand("copy");
+      disable('copy-button');
+      var copyBtn = document.getElementById('copy-button');
+      copyBtn.innerText = "Copied!"
+    }
 
-<style>
+    function show(id) {
+      document.getElementById(id).style.display = '';
+    }
+    function hide(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    function enable(id) {
+      document.getElementById(id).disabled = false;
+    }
+    function disable(id) {
+      document.getElementById(id).disabled = true;
+    }
 
-* {
-  font-family: system-ui;
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-body {
-  padding: 0.5em;
-}
-
-#editable, #md  {
-  background-color: #eee;
-  padding: 0.75em;
-  margin-bottom: 0.75em;
-  height: 250px;
-  font-size: 0.8em;
-  overflow: scroll;
-  width: 100%;
-  border: 1px solid #aaa;
-  display: block;
-}
-
-.btn {
-  padding: 0.75em 1em;
-  background: #ccc;
-  border: 1px solid #777;
-  border-radius: 3px;
-}
+    function summ(id) {
+      var text = document.getElementById(id).innerText;
+      var summarizer = new JsSummarize();
+      text = summarizer.summarize("Title", text);
+      document.getElementById(id).innerText = text;
+    }
 
 
-</style>
+  </script>
+
+  <style>
+    * {
+      font-family: system-ui;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      padding: 0.5em;
+    }
+
+    #editable,
+    #md {
+      background-color: #eee;
+      padding: 0.75em;
+      margin-bottom: 0.75em;
+      height: 250px;
+      font-size: 0.8em;
+      overflow: scroll;
+      width: 100%;
+      border: 1px solid #aaa;
+      display: block;
+    }
+
+    .btn {
+      padding: 0.75em;
+      background: #ccc;
+      border: 1px solid #777;
+      border-radius: 3px;
+    }
+  </style>
 
 </body>
 

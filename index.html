@@ -40,6 +40,10 @@
 
     function summ(id) {
       var text = document.getElementById(id).innerText;
+
+      var keywords = getKeyWords(text);
+      console.log(keywords);
+
       text = text.replaceAll("\n\n", "\n");
       text = text.replaceAll("\n\n", "\n");
       text = text.replaceAll("\n\n", "\n");
@@ -53,6 +57,17 @@
       text = text.replaceAll("\n", "");
 
       var sentences = text.split("||");
+
+      for (var i = 0; i < sentences.length; i++) {
+        var x = 0;
+        for (var j = 0; j < keywords.length; j++) {
+          // 
+          var n = sentences[i].search(keywords[j]);
+          if(n >= 0) x++;
+        }
+        if (x == 0) console.log(sentences[i]); //sentences = sentences.splice(i, 1);
+      } 
+
       sentences = getRandomMembers(sentences, 3);
 
       disable('summarize-button');
@@ -60,6 +75,40 @@
       copyBtn.innerText = "Summ'd!"
       document.getElementById(id).innerText = sentences.join("\n\n");;
       sentences = null;
+    }
+
+
+
+    var suffixes = ["n't", "'s", "'ve", "'d"];
+    var commonWords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'can', 'will', 'just', 'should', 'now', "ai", 'ma', 'say', 'said', 'would'];
+
+    function getKeyWords(string, num = 5) {
+      
+      string = string.replace(/[0-9]/gi, '');
+      string = string.replace(/[^\'\w\s]/gi, '');
+      string = string.replace("\n", ' ');
+      string = string.replaceAll("  ", " ");
+
+      for (var i = 0; i < commonWords.length; i++) {
+        string = string.replaceAll(" " + commonWords[i] + " ", " ");
+        string = string.replaceAll(" " + commonWords[i] + ".", " ");
+      }
+      for (var i = 0; i < suffixes.length; i++) {
+        string = string.replaceAll(suffixes[i] + " ", " ");
+      }
+
+      var array = string.split(" ");
+
+      var map = array.reduce(function (p, c) {
+        p[c] = (p[c] || 0) + 1;
+        return p;
+      }, {});
+
+      var array2 = Object.keys(map).sort(function (a, b) {
+        return map[b] - map[a];
+      });
+
+      return (array2.slice(0, num));
     }
 
     function getRandomMembers2(arr, n) {
@@ -89,7 +138,7 @@
         if (x.indexOf(r) === -1) x.push(r);
       }
       x = x.sort(function (a, b) { return a - b });
-      res = ["Random points:"];
+      res = [];
       for (var i = 0; i < x.length; i++) {
         res.push("- " + arr2[x[i]]);
       }

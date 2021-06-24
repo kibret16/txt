@@ -65,7 +65,7 @@
           var n = sentences[i].search(keywords[j]);
           if(n >= 0) x++;
         }
-        if (x == 0) console.log(sentences[i]); //sentences = sentences.splice(i, 1);
+        if (x == 0) sentences.splice(i, 1); //TODO: rank sentences based on how many keywords they have
       } 
 
       sentences = getRandomMembers(sentences, 3);

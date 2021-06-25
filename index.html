@@ -48,7 +48,7 @@
       text = text.replaceAll("\n\n", "\n");
       text = text.replaceAll("\n\n", "\n");
       text = text.replaceAll("\n", "||");
-      // text = text.replaceAll(". ", ".||");
+      text = text.replaceAll(". ", ".||");
       // text = text.replaceAll(".\n", ".||\n");
       // text = text.replaceAll("? ", "?||");
       // text = text.replaceAll("?\n", "?||\n");
@@ -57,27 +57,43 @@
       text = text.replaceAll("\n", "");
 
       var sentences = text.split("||");
+      filtered = [];
 
+      // for each sentence, search keywords in it and if nothing is found, remove it
       for (var i = 0; i < sentences.length; i++) {
         var x = 0;
+        var obj = []
         for (var j = 0; j < keywords.length; j++) {
-          // 
           var n = sentences[i].search(keywords[j]);
           if(n >= 0) x++;
         }
-        if (x == 0) sentences.splice(i, 1); //TODO: rank sentences based on how many keywords they have
+        if (x > 0) {
+          obj["order"] = i;
+          obj["rank"] = x;
+          obj["text"] = sentences[i];
+          filtered.push(obj);
+        } 
       } 
 
-      sentences = getRandomMembers(sentences, 3);
+      filtered = getRankedMembers(filtered, 5);
 
       disable('summarize-button');
       var copyBtn = document.getElementById('summarize-button');
       copyBtn.innerText = "Summ'd!"
-      document.getElementById(id).innerText = sentences.join("\n\n");;
-      sentences = null;
+      document.getElementById(id).innerHTML = filtered.join("<br>");;
+      filtered = null;
     }
 
-
+    function getRankedMembers(arr, n = 5) {
+      var content = [];
+      arr = arr.sort(function (a, b) { return b["rank"] - a["rank"] }).slice(0, n);
+      arr = arr.sort(function (a, b) { return a["order"] - b["order"] });
+      for (i = 0; i < arr.length; i++) {
+        content.push("<blockquote>" + arr[i]["text"] + "</blockquote>");
+      }
+      console.log(content);
+      return content;
+    }
 
     var suffixes = ["n't", "'s", "'ve", "'d"];
     var commonWords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'can', 'will', 'just', 'should', 'now', "ai", 'ma', 'say', 'said', 'would'];
@@ -140,7 +156,7 @@
       x = x.sort(function (a, b) { return a - b });
       res = [];
       for (var i = 0; i < x.length; i++) {
-        res.push("- " + arr2[x[i]]);
+        res.push("<blockquote>" + arr2[x[i]] + "</blockquote>");
       }
       return (res);
     }

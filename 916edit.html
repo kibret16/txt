@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Screen Editor</title>
+<style>
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  background-color: inherit;
+  color: inherit;
+  position: relative;
+  box-sizing: border-box;
+  word-break: break-all;
+  outline: none;
+}
+
+body{
+  background-color: #111;
+  color: #eee;
+}
+
+table {
+  border-collapse: collapse; /* Remove borders for cleaner look */
+  width: 100vw; /* Optional: Set table width */
+  height: 100vh; /* Optional: Set table height */
+}
+
+td {
+  text-align: center; /* Center text horizontally */
+  vertical-align: middle; /* Center content vertically */
+}
+
+#main-content {
+  font-size: 3rem;
+  font-family: 'abyssinica', 'visual geez unicode', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-weight: bold;
+}
+
+#custom-css-container {
+  position: absolute;
+  z-index: 9;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+}
+
+#custom-css {
+  font-family: monospace;
+  width: 100%;
+  background: #333;
+  color: #abc;
+  padding: 5px;
+  font-size: 0.7rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+</style>
+</head>
+<body onclick="openFullscreen()" id="content-body">
+  <table id="main-content">
+    <tbody>
+      <tr>
+        <td contenteditable="true" id="editable-div">
+          <p>Hello ሰላም</p>
+        </td>
+      </tr>      
+    </tbody>
+  </table>
+
+  <div id="custom-css-container" class="hidden">
+    <textarea onkeyup="applyCSS()" rows="5" id="custom-css" placeholder="Enter your custom CSS here..."></textarea>
+  </div>
+
+<script>
+
+const targetDiv = document.getElementById("main-content");
+const editableDiv = document.getElementById("editable-div");
+const customCSSContainer = document.getElementById("custom-css-container");
+const customCSS = document.getElementById("custom-css");
+
+let clickCount = 0;
+let timeoutId;
+
+targetDiv.addEventListener("click", function() {
+  clickCount++;
+  clearTimeout(timeoutId); // Clear any previous timeout
+  if (clickCount === 2) {
+    customCSSContainer.classList.toggle("hidden"); 
+    clickCount = 0; // Reset click count
+  } else {
+    // Single click, start a timeout for double click detection
+    timeoutId = setTimeout(() => {
+      clickCount = 0; // Reset click count if no double click within timeout
+    }, 500); // Adjust timeout duration as needed (in milliseconds)
+  }
+});
+
+const applyCSS = function() {
+  const userCSS = customCSS.value;
+  // Update the editable div's style based on user input
+  editableDiv.style.cssText = userCSS;
+};
+
+function openFullscreen(id = "content-body") {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {elem.requestFullscreen()}
+}
+
+
+</script>
+
+
+</body>
+
+
+
+
+
+</html>
